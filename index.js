@@ -55,15 +55,17 @@ function App() {
 // Take all the shapes that are within the buffer, sorted by distnace
 // Sum populations of the closest until they're just under the population
 function checkIntersect(poly) {
+  glog(`Found target ${JSON.stringify(poly, null, 2)}`, poly.properties.geo_id === "56013")
   const idsSortedbyDistance = _checkIntersect(poly, shape.features);
   const TARGET_POP = 10000000;
   let targetSum = 0;
   const geos = [];
   for (const geo of idsSortedbyDistance) {
+    glog(`Target sum is ${targetSum}`, poly.properties.geo_id === "56013")
     const {geoId, summable} = geo;
-    targetSum += summable;
-    if (targetSum > TARGET_POP) { 
-      console.log('Found', targetSum, 'over', geos.length)
+    targetSum = Number.isFinite(summable) ? targetSum + summable : targetSum;
+    if (targetSum > TARGET_POP) {
+      console.log('Found', targetSum - summable, 'over', geos.length)
       return geos;
     }
     geos.push(geoId);
@@ -72,16 +74,19 @@ function checkIntersect(poly) {
 
 const bisect = bisector(d => d.distance);
 
+function glog(msg, bool) {
+  if (bool) console.log(msg);
+}
+
 function insertIntoSorted(obj, key, sortedArr) {
   const idx = bisect.right(sortedArr, obj[key])
   sortedArr.splice(idx, 0, obj);
 }
 
 function _checkIntersect(poly, polyList) {
-  const bufferedGeom = turf.buffer(poly.geometry, 1000, {units: 'miles'});
-  const bufferCentroid = turf.centroid(poly.geometry);
-  const intersectList = [];
+  const ownCentroid = turf.centroid(poly.geometry);
   const ownGeoId = poly.properties.geo_id;
+  const distanceList = [];
 
   for (const otherGeom of polyList) {
     const otherGeoId = otherGeom.properties.geo_id
@@ -89,14 +94,12 @@ function _checkIntersect(poly, polyList) {
       continue;
     }
 
-    if (turf.intersect(bufferedGeom, otherGeom.geometry)) {
-      const distance = turf.distance(bufferCentroid, turf.centroid(otherGeom.geometry));
-      const obj = {geoId: otherGeoId, summable: pop[otherGeoId], distance}
-      insertIntoSorted(obj, 'distance', intersectList)
-    }
+    const distance = turf.distance(ownCentroid, turf.centroid(otherGeom.geometry));
+    const obj = {geoId: otherGeoId, summable: pop[otherGeoId], distance}
+    insertIntoSorted(obj, 'distance', distanceList)
   }
-  insertIntoSorted({geoId: ownGeoId, summable: pop[ownGeoId], distance: 0}, 'distance', intersectList)
-  return intersectList;
+  insertIntoSorted({geoId: ownGeoId, summable: pop[ownGeoId], distance: 0}, 'distance', distanceList)
+  return distanceList;
 }
 
 
@@ -121,7 +124,8 @@ function Map({data, viewState, target, neighbors, onHover}) {
     stroked: true,
     lineWidthMinPixels: 1,
     updateTriggers: {
-        getFillColor: [target, neighbors]
+        getFillColor: [target, neighbors],
+        getLineColor: [target, neighbors]
     },
     getFillColor: d => {
       if (d.properties.geo_id === target) {
@@ -132,7 +136,16 @@ function Map({data, viewState, target, neighbors, onHover}) {
       }
       return [255, 255, 0, 128]
     },
-    getLineColor: [0, 0, 0],
+    onClick: (info, event) => console.log(info.object.properties.geo_id),
+    getLineColor: d => {
+      if (d.properties.geo_id === target) {
+        return [255, 255, 255]
+      }
+      if (neighbors && neighbors.includes(d.properties.geo_id)) {
+        return [255, 255, 255]
+      }
+      return [0, 0, 0]
+    },
     onHover,
   });
 
