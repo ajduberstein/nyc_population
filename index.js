@@ -5,7 +5,6 @@ import ReactDOM from 'react-dom';
 import DeckGL from '@deck.gl/react';
 import { GeoJsonLayer } from '@deck.gl/layers';
 import * as turf from '@turf/turf';
-import { Heap } from 'heap-js';
 import {bisector} from 'd3-array';
 
 import pop from './county-populations.json';
@@ -36,32 +35,12 @@ function App() {
   );
 }
 
-// function checkIntersect(poly, polyList) {
-//   const intersectList = [];
-//   console.log(turf);
-//   const bufferedGeom = turf.buffer(poly.geometry, 0.1, {units: 'miles'});
-//   for (const otherGeom of polyList) {
-//     if (otherGeom.properties.geo_id === poly.properties.geo_id) {
-//       continue;
-//     }
-//     if (turf.intersect(bufferedGeom, otherGeom.geometry)) {
-//       intersectList.push(otherGeom.properties.geo_id)
-//     }
-//   }
-//   return intersectList;
-// }
-
-// Take a 400 mile buffer
-// Take all the shapes that are within the buffer, sorted by distnace
-// Sum populations of the closest until they're just under the population
 function checkIntersect(poly) {
-  glog(`Found target ${JSON.stringify(poly, null, 2)}`, poly.properties.geo_id === "56013")
   const idsSortedbyDistance = _checkIntersect(poly, shape.features);
   const TARGET_POP = 10000000;
   let targetSum = 0;
   const geos = [];
   for (const geo of idsSortedbyDistance) {
-    glog(`Target sum is ${targetSum}`, poly.properties.geo_id === "56013")
     const {geoId, summable} = geo;
     targetSum = Number.isFinite(summable) ? targetSum + summable : targetSum;
     if (targetSum > TARGET_POP) {
@@ -73,10 +52,6 @@ function checkIntersect(poly) {
 }
 
 const bisect = bisector(d => d.distance);
-
-function glog(msg, bool) {
-  if (bool) console.log(msg);
-}
 
 function insertIntoSorted(obj, key, sortedArr) {
   const idx = bisect.right(sortedArr, obj[key])
