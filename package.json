@@ -1,0 +1,18 @@
+{
+  "name": "affirmation",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@deck.gl/core": "^8.4.13",
+    "@deck.gl/layers": "^8.4.13",
+    "@deck.gl/react": "^8.4.13",
+    "@loaders.gl/core": "^2.3.13",
+    "@turf/intersect": "^6.3.0",
+    "@turf/turf": "^6.3.0",
+    "heap-js": "^2.1.5",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-map-gl": "^6.1.12"
+  }
+}
