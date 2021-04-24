@@ -28,9 +28,10 @@ function App() {
 
   return (
     <div>
-      <h1>Distributed New York</h1>
-      <p>Mouseover any part of the US to distribute the population of New York to that area</p>
-      <Map data={shape} viewState={viewport} target={target} onHover={handleHover} neighbors={neighbors} />
+      <h1 style={{fontFamily: 'sans-serif'}}>Distributed New York</h1>
+      <div className="deck-container" style={{height: '100vh', width: '100vw', position: 'relative'}}>
+        <Map data={shape} viewState={viewport} target={target} onHover={handleHover} neighbors={neighbors} />
+      </div>
     </div>
   );
 }
@@ -83,7 +84,7 @@ const viewport = {
     "longitude": -95.91054294008634,
     "bearing": 0,
     "pitch": 0,
-    "zoom": 3.903536075444697
+    "zoom": 3.5
 };
 
 function Map({data, viewState, target, neighbors, onHover}) {
