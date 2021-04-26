@@ -42,7 +42,7 @@ function App() {
         <p>{metrics.numCounties ? `Purple area representing ${numberWithCommas(metrics.numPop)} people in ${metrics.numCounties} US counties` : 'Mouseover map'}</p>
       </div>
       <div className="deck-container" style={{height: '100vh', width: '100vw', position: 'relative'}}>
-        <Map data={shape} viewState={viewport} target={target} onHover={active ? handleHover : null} neighbors={neighbors} />
+        <Map data={shape} viewState={VIEWPORT} target={target} onHover={active ? handleHover : null} neighbors={neighbors} />
       </div>
     </div>
   );
@@ -90,7 +90,7 @@ function _checkIntersect(poly, polyList) {
 }
 
 
-const viewport = {
+const VIEWPORT = {
     "latitude": 37.62469781276222,
     "longitude": -95.91054294008634,
     "bearing": 0,
@@ -99,10 +99,6 @@ const viewport = {
 };
 
 function Map({data, viewState, target, neighbors, onHover, active}) {
-  /**
-   * Data format:
-   * Valid GeoJSON object
-   */
   const layer = new GeoJsonLayer({
     id: 'geojson-layer',
     data,
