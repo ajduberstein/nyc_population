@@ -42,7 +42,12 @@ function App() {
         <p>{metrics.numCounties ? `Purple area representing ${numberWithCommas(metrics.numPop)} people in ${metrics.numCounties} US counties` : 'Mouseover map'}</p>
       </div>
       <div className="deck-container" style={{height: '100vh', width: '100vw', position: 'relative'}}>
-        <Map data={shape} viewState={VIEWPORT} target={target} onHover={active ? handleHover : null} neighbors={neighbors} />
+        <Map
+          data={shape}
+          viewState={VIEWPORT}
+          target={target}
+          onHover={active ? handleHover : null}
+          neighbors={neighbors} />
       </div>
     </div>
   );
