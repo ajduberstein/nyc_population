@@ -1,8 +1,10 @@
 /* global window */
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 
 import DeckGL from '@deck.gl/react';
+import {WebMercatorViewport, View} from '@deck.gl/core';
+import {StaticMap} from 'react-map-gl';
 import { GeoJsonLayer } from '@deck.gl/layers';
 import * as turf from '@turf/turf';
 import {bisector} from 'd3-array';
@@ -18,13 +20,10 @@ function App() {
   const [target, setTarget] = useState("none");
   const [neighbors, setNeighbors] = useState([]);
   const [metrics, setMetrics] = useState({});
-  const [active, setActive] = useState(true);
-  const [county, setCounty] = useState(null);
 
   function handleHover(info, event) {
-    if (info && info.object) {
-      const targetGeoId = info.object.properties.id;
-      const {geos, numPop, numCounties} = checkIntersect(info.object);
+    if (info && info.object) { const targetGeoId = info.object.properties.id;
+      const {geos = [], numPop, numCounties} = checkIntersect(info.object);
       setTarget(targetGeoId);
       setNeighbors(geos);
       setMetrics({numPop, numCounties});
@@ -37,16 +36,16 @@ function App() {
 
   return (
     <div style={{fontFamily: 'sans-serif'}}>
-      <h1>Distributed New York</h1>
-      <div>
-        <p>{metrics.numCounties ? `Purple area representing ${numberWithCommas(metrics.numPop)} people in ${metrics.numCounties} US counties` : 'Mouseover map'}</p>
+      <div style={{height: '15vh', margin: '10px'}}>
+        <h1>Distributed New York City</h1>
+        <p>{metrics.numCounties ? `Purple area representing ${numberWithCommas(metrics.numPop)} people in ${metrics.numCounties} US counties` : <em>Mouseover map</em>}</p>
       </div>
-      <div className="deck-container" style={{height: '100vh', width: '100vw', position: 'relative'}}>
+      <div className="deck-container" style={{position: 'relative', top: '10px'}}>
         <Map
           data={shape}
           viewState={VIEWPORT}
           target={target}
-          onHover={active ? handleHover : null}
+          onHover={handleHover}
           neighbors={neighbors} />
       </div>
     </div>
@@ -76,7 +75,7 @@ function insertIntoSorted(obj, key, sortedArr) {
 }
 
 function _checkIntersect(poly, polyList) {
-  const ownCentroid = turf.centroid(poly.geometry);
+  const ownCentroid = turf.center(poly.geometry);
   const ownGeoId = poly.properties.id;
   const distanceList = [];
 
@@ -86,7 +85,7 @@ function _checkIntersect(poly, polyList) {
       continue;
     }
 
-    const distance = turf.distance(ownCentroid, turf.centroid(otherGeom.geometry));
+    const distance = turf.distance(ownCentroid, turf.center(otherGeom.geometry));
     const obj = {geoId: otherGeoId, summable: pop[otherGeoId], distance}
     insertIntoSorted(obj, 'distance', distanceList)
   }
@@ -96,14 +95,13 @@ function _checkIntersect(poly, polyList) {
 
 
 const VIEWPORT = {
-    "latitude": 37.62469781276222,
-    "longitude": -95.91054294008634,
+    ...(new WebMercatorViewport()).fitBounds([[-124.5, 48.22], [-67.1, 25.31]]),
     "bearing": 0,
     "pitch": 0,
-    "zoom": 3.75
+    "zoom": window.screen.clientWidth > 700 ? 3.81 : 2.5
 };
 
-function Map({data, viewState, target, neighbors, onHover, active}) {
+function Map({data, viewState, target, neighbors, onHover}) {
   const layer = new GeoJsonLayer({
     id: 'geojson-layer',
     data,
@@ -133,12 +131,34 @@ function Map({data, viewState, target, neighbors, onHover, active}) {
       }
       return [25, 25, 25]
     },
+    onClick: (info, event) => console.log(info),
     onHover
   });
 
-  return (<DeckGL viewState={viewState}
-    layers={[layer]}
-   />);
+
+  const deckglRef = useRef(null);
+
+  function onViewportChange({viewState, interactionState, oldViewState}) {
+    console.log('we are changing the viewport')
+    return {
+      height: deckglRef.current.clientHeight,
+      width: deckglRef.current.clientWidth,
+      ...viewState
+    }
+  }
+
+  return (
+    <DeckGL ref={deckglRef} initialViewState={VIEWPORT}
+      controller={true}
+      layers={[layer]}
+      onViewStateChange={v => console.log(v.viewState)}
+      height={'100vh'}
+      width={'100vw'}
+    >
+      <View id="map" width="100%">
+        <StaticMap mapStyle={null} />
+      </View>
+    </DeckGL>);
 }
 
 
@@ -148,3 +168,4 @@ ReactDOM.render(
   ),
   document.getElementById('react-container')
 );
+
