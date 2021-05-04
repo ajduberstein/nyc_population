@@ -9,8 +9,7 @@ import { GeoJsonLayer } from '@deck.gl/layers';
 import * as turf from '@turf/turf';
 import {bisector} from 'd3-array';
 
-import pop from './county-populations.json';
-import shape from './counties.json';
+import geojson from './presorted.json';
 
 function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -42,7 +41,7 @@ function App() {
       </div>
       <div className="deck-container" style={{position: 'relative', top: '10px'}}>
         <Map
-          data={shape}
+          data={geojson}
           viewState={VIEWPORT}
           target={target}
           onHover={handleHover}
@@ -53,7 +52,7 @@ function App() {
 }
 
 function checkIntersect(poly) {
-  const idsSortedbyDistance = _checkIntersect(poly, shape.features);
+  const idsSortedbyDistance = _checkIntersect(poly, geojson.features);
   const TARGET_POP = 8336817;
   let targetSum = 0;
   const geos = [];
@@ -136,19 +135,9 @@ function Map({data, viewState, target, neighbors, onHover}) {
   });
 
 
-  const deckglRef = useRef(null);
-
-  function onViewportChange({viewState, interactionState, oldViewState}) {
-    console.log('we are changing the viewport')
-    return {
-      height: deckglRef.current.clientHeight,
-      width: deckglRef.current.clientWidth,
-      ...viewState
-    }
-  }
 
   return (
-    <DeckGL ref={deckglRef} initialViewState={VIEWPORT}
+    <DeckGL initialViewState={VIEWPORT}
       controller={true}
       layers={[layer]}
       onViewStateChange={v => console.log(v.viewState)}
