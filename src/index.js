@@ -17,6 +17,10 @@ function isMobileDevice() {
     return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
 };
 
+const TARGET_COLOR = [43, 140, 190];
+const BACKGROUND_COLOR = [236, 231, 242];
+const SECONDARY_COLOR = [166, 189, 219];
+
 const TARGET_POP = 8336817;
 const DEFAULT_METRICS = {numPop: 0, numCounties: 0};
 const CONTINENTAL_US_BBOX = [
@@ -151,12 +155,12 @@ function Map({data, viewState, target, neighbors, onHover, onResize}) {
     },
     getFillColor: d => {
       if (neighbors && neighbors.has(d.properties.id)) {
-        return [218, 127, 143]
+        return TARGET_COLOR
       }
-      return [225, 229, 234, 128]
+      return BACKGROUND_COLOR
     },
     highlightColor: [218, 127, 143, 128],
-    getLineColor: [25, 25, 25, 128],
+    getLineColor: SECONDARY_COLOR,
     onHover,
     autoHighlight: true
   });
