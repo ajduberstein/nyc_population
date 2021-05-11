@@ -11,7 +11,6 @@ import {bisector} from 'd3-array';
 
 import pop from './county-populations.json';
 import shape from './counties.json';
-import './App.css';
 
 function isMobileDevice() {
     return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
