@@ -1,8 +1,10 @@
 Distributed population of New York
 ==================================
 
-Built using deck.gl and turf.js.
+![ezgif com-gif-maker (1)](https://user-images.githubusercontent.com/2204757/117856579-a45ad780-b240-11eb-8ce7-b66fcbdb4d45.gif)
 
-Data from the US census API at the URL:
+Interactive visualization of the population of NYC distributed to an area containing approximately the same number of people.
 
-`https://api.census.gov/data/2019/acs/acs5?get=NAME,GEO_ID,B01001_001E&for=county:*&in=state:*&key={KEY}`
+Counties are sorted by distance to the cursor, and population is summed over those counties by order of distance, until it's just over the population of NYC.
+
+Built using deck.gl, turf.js, and US Census data.
