@@ -1,6 +1,7 @@
 * {
   margin: 0;
   padding: 0;
+  overflow: hidden;
 }
 
 body {
@@ -16,11 +17,11 @@ body {
 }
 
 .header {
-  position: relative;
+  position: absolute;
   background: #faf3f3;
   display: block;
   width: 100%;
-  overflow: auto;
+  max-height: 30vh;
   padding: 10px;
   z-index: 10;
 }

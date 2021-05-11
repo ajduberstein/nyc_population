@@ -12,10 +12,6 @@ import {bisector} from 'd3-array';
 import pop from './county-populations.json';
 import shape from './counties.json';
 
-function isMobileDevice() {
-    return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
-};
-
 const TARGET_COLOR = [43, 140, 190];
 const BACKGROUND_COLOR = [236, 231, 242];
 const SECONDARY_COLOR = [166, 189, 219];
@@ -43,22 +39,23 @@ function App() {
   const [neighbors, setNeighbors] = useState(null);
   const [metrics, setMetrics] = useState(DEFAULT_METRICS);
   const [viewport, setViewport] = useState(INITIAL_VIEWPORT);
-  const [computing, setComputing] = useState(false);
 
   function handleResize({width, height}) {
     const vw = new WebMercatorViewport({
       ...viewport, height, width
     });
-    const { zoom } = vw.fitBounds(CONTINENTAL_US_BBOX);
+    const opts = {padding: 10}
+    if (window.innerWidth > 900) {
+      opts.padding = 100;
+    }
+    const { zoom } = vw.fitBounds(CONTINENTAL_US_BBOX, opts);
     setViewport({...viewport, zoom, height, width});
   }
 
   function handleHover(info, event) {
     if (info && info.object) {
       const targetGeoId = info.object.properties.id;
-      setComputing(true);
       const {geos = [], numPop = 0, numCounties} = checkIntersect(info.object);
-      setComputing(false);
       setTarget(targetGeoId);
       setNeighbors(geos);
       setMetrics({numPop, numCounties});
@@ -70,16 +67,13 @@ function App() {
   }
 
   let msg;
-  if (computing) {
-    msg = (<p>Computing</p>);
-  }
-  else if (target === "06037") {
-    msg = (<p>{metrics.numCounties ? `LA County is 10,081,570 and exceeds the population of NYC` : <em>Mouseover or tap map. Pinch or scroll to zoom.</em>}</p>)
+  if (target === "06037") {
+    msg = (<p>'LA County is 10,081,570 and exceeds the population of NYC' </p>)
   } else if (target) {
     msg = (<p>{`Highlighted area representing ${numberWithCommas(metrics.numPop)} people in ${metrics.numCounties} US counties, compared to 8,336,817 in NYC.`}</p>)
   }
   else {
-    msg = (<p><i>Mouseover/tap map, scroll/pinch to zoom</i></p>)
+    msg = (<p>Tap to find the area of the US roughly equivalent to the population of NYC.</p>)
   }
 
   return (
@@ -148,7 +142,7 @@ function Map({data, viewState, target, neighbors, onHover, onResize}) {
     pickable: true,
     filled: true,
     stroked: true,
-    lineWidthMinPixels: 1,
+    lineWidthMinPixels: 0.5,
     updateTriggers: {
         getFillColor: [neighbors]
     },
@@ -156,20 +150,18 @@ function Map({data, viewState, target, neighbors, onHover, onResize}) {
       if (neighbors && neighbors.has(d.properties.id)) {
         return TARGET_COLOR
       }
-      return BACKGROUND_COLOR
+      return SECONDARY_COLOR
     },
     highlightColor: [218, 127, 143, 128],
-    getLineColor: SECONDARY_COLOR,
-    onHover,
-    autoHighlight: true
+    getLineColor: BACKGROUND_COLOR,
+    autoHighlight: true,
+    onHover
   });
 
 
-  const deckglRef = useRef(null);
-
   return (
-    <DeckGL ref={deckglRef} initialViewState={viewState}
-      controller={true}
+    <DeckGL initialViewState={viewState}
+      controller={false}
       layers={[layer]}
       useDevicePixels={true}
       height={'100%'}

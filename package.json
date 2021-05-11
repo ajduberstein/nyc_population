@@ -4,7 +4,10 @@
   "app": "dist/index.js",
   "targets": {
     "app": {
-      "source": ["src/index.js", "src/index.html"],
+      "source": [
+        "src/index.js",
+        "src/index.html"
+      ],
       "distDir": "dist/"
     }
   },
