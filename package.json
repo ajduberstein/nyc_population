@@ -2,6 +2,7 @@
   "name": "nyc_pop",
   "version": "1.0.0",
   "app": "dist/index.js",
+  "license": "MIT",
   "targets": {
     "app": {
       "source": [
@@ -11,7 +12,6 @@
       "distDir": "dist/"
     }
   },
-  "license": "MIT",
   "dependencies": {
     "@deck.gl/core": "^8.4.13",
     "@deck.gl/layers": "^8.4.13",
@@ -33,6 +33,7 @@
   },
   "devDependencies": {
     "cssnano": "^5.0.2",
+    "parcel": "^2.0.0-beta.2",
     "postcss": "^8.2.1",
     "shx": "^0.3.2"
   }

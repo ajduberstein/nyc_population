@@ -74,7 +74,11 @@ function App() {
 
   let msg;
   if (target === "06037") {
-    msg = <p>'LA County is 10,081,570 and exceeds the population of NYC' </p>;
+    msg = (
+      <p>
+        LA County is home to 10,081,570 people and exceeds the population of NYC
+      </p>
+    );
   } else if (target) {
     msg = (
       <p>{`Highlighted area representing ${numberWithCommas(
@@ -92,20 +96,26 @@ function App() {
     );
   }
 
+  const selector = (
+    <span className="city-selector">
+      <small className="selector-icon">&#9660;</small> New York City
+    </span>
+  );
+
   return (
     <div>
       <div className="header">
-        <h1>Distributed New York City</h1>
+        <h1>Distributed {selector}</h1>
         {msg}
       </div>
       <div className="deck-container">
         <Map
           data={shape}
           viewState={viewport}
-          target={target}
           onHover={handleHover}
           onResize={handleResize}
           neighbors={neighbors}
+          metrics={metrics}
         />
       </div>
     </div>
@@ -134,7 +144,7 @@ function insertIntoSorted(obj, key, sortedArr) {
 }
 
 function _checkIntersect(poly, polyList) {
-  const ownCentroid = turf.center(poly.geometry);
+  const ownCentroid = turf.centroid(poly.geometry);
   const ownGeoId = poly.properties.id;
   const distanceList = [];
 
@@ -159,14 +169,14 @@ function _checkIntersect(poly, polyList) {
   return distanceList;
 }
 
-function Map({ data, viewState, target, neighbors, onHover, onResize }) {
+function Map({ data, viewState, neighbors, onHover, onResize, metrics }) {
   const layer = new GeoJsonLayer({
     id: "geojson-layer",
     data,
     pickable: true,
     filled: true,
     stroked: true,
-    lineWidthMinPixels: 0.5,
+    lineWidthMinPixels: 0.3,
     updateTriggers: {
       getFillColor: [neighbors],
     },
@@ -178,14 +188,20 @@ function Map({ data, viewState, target, neighbors, onHover, onResize }) {
     },
     highlightColor: [218, 127, 143, 128],
     getLineColor: BACKGROUND_COLOR,
-    autoHighlight: true,
+    autgHighlight: true,
     onHover,
   });
 
   return (
     <DeckGL
       initialViewState={viewState}
-      controller={false}
+      controller={{
+        pan: true,
+        touchZoom: false,
+        doubleClickZoom: false,
+        dragRotate: false,
+        scrollZoom: false,
+      }}
       layers={[layer]}
       useDevicePixels={true}
       height={"100%"}

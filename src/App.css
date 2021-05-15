@@ -24,4 +24,31 @@ body {
   max-height: 30vh;
   padding: 10px;
   z-index: 10;
+  white-space: pre;
+}
+
+.city-selector {
+  border: 1px solid black;
+  border-radius: 10px;
+  position: absolute;
+  top: 7px;
+  padding: 3px;
+  cursor: pointer;
+}
+
+.city-selector:hover {
+  background: grey;
+  color: white;
+  border-radius: 10px;
+}
+
+.selector-icon {
+  font-size: 15px;
+  margin: 0;
+  padding: 0;
+  color: grey;
+}
+
+h1 {
+  margin-bottom: 10px;
 }
