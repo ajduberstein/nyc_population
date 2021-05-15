@@ -96,16 +96,10 @@ function App() {
     );
   }
 
-  const selector = (
-    <span className="city-selector">
-      <small className="selector-icon">&#9660;</small> New York City
-    </span>
-  );
-
   return (
     <div>
       <div className="header">
-        <h1>Distributed {selector}</h1>
+        <h1>Distributed NYC</h1>
         {msg}
       </div>
       <div className="deck-container">
