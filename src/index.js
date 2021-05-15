@@ -123,10 +123,10 @@ function checkIntersect(poly) {
   for (const geo of idsSortedbyDistance) {
     const { geoId, summable } = geo;
     targetSum = Number.isFinite(summable) ? targetSum + summable : targetSum;
-    geos.add(geoId);
     if (targetSum >= TARGET_POP) {
       return { geos, numPop: targetSum, numCounties: geos.size };
     }
+    geos.add(geoId);
   }
 }
 

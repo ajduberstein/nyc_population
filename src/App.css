@@ -24,7 +24,6 @@ body {
   max-height: 30vh;
   padding: 10px;
   z-index: 10;
-  white-space: pre;
 }
 
 .city-selector {
@@ -51,4 +50,5 @@ body {
 
 h1 {
   margin-bottom: 10px;
+  white-space: pre;
 }
