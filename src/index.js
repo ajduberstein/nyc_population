@@ -81,9 +81,7 @@ function App() {
     );
   } else if (target) {
     msg = (
-      <p>{`Highlighted area representing ${numberWithCommas(
-        metrics.numPop
-      )} people in ${
+      <p>{`Area represents ${numberWithCommas(metrics.numPop)} people in ${
         metrics.numCounties
       } US counties, compared to 8,336,817 in NYC.`}</p>
     );
@@ -123,8 +121,8 @@ function checkIntersect(poly) {
   for (const geo of idsSortedbyDistance) {
     const { geoId, summable } = geo;
     targetSum = Number.isFinite(summable) ? targetSum + summable : targetSum;
-    if (targetSum >= TARGET_POP) {
-      return { geos, numPop: targetSum, numCounties: geos.size };
+    if (targetSum > TARGET_POP) {
+      return { geos, numPop: targetSum - summable, numCounties: geos.size };
     }
     geos.add(geoId);
   }
@@ -180,9 +178,9 @@ function Map({ data, viewState, neighbors, onHover, onResize, metrics }) {
       }
       return SECONDARY_COLOR;
     },
-    highlightColor: [218, 127, 143, 128],
+    highlightColor: TARGET_COLOR,
     getLineColor: BACKGROUND_COLOR,
-    autgHighlight: true,
+    autoHighlight: true,
     onHover,
   });
 
