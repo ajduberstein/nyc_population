@@ -35,6 +35,10 @@ body {
   cursor: pointer;
 }
 
+a {
+  color: #005a87;
+}
+
 .city-selector:hover {
   background: grey;
   color: white;

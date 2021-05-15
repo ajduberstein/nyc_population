@@ -97,7 +97,14 @@ function App() {
   return (
     <div>
       <div className="header">
-        <h1>Distributed NYC</h1>
+        <h1>
+          Distributed NYC
+          <span
+            style={{ fontSize: "55%", paddingLeft: 5, fontWeight: "normal" }}
+          >
+            by <a href="https://duberste.in">duber</a>
+          </span>
+        </h1>
         {msg}
       </div>
       <div className="deck-container">
